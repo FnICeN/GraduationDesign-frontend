@@ -11,6 +11,7 @@ const permissionRouter = {
   meta: {
     title: "权限管理",
     icon: "ep:lollipop",
+    showLink: false,
     rank: 10
   },
   children: [
@@ -19,6 +20,7 @@ const permissionRouter = {
       name: "PermissionPage",
       meta: {
         title: "页面权限",
+
         roles: ["admin", "common"]
       }
     },
@@ -36,7 +38,7 @@ const permissionRouter = {
       }
     }
   ]
-};
+} satisfies RouteConfigsTable;
 
 export default defineFakeRoute([
   {
