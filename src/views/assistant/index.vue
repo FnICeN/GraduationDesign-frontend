@@ -3,6 +3,7 @@ import ChatBox from "./chatbox.vue";
 import { ref } from "vue";
 import { message } from "@/utils/message";
 import { getRes } from "@/api/getResponse";
+import { Setting, Delete } from "@element-plus/icons-vue";
 defineOptions({
   // name 作为一种规范最好必须写上并且和路由的name保持一致
   name: "Assistant"
@@ -16,6 +17,8 @@ const messages = ref([
 
 const usermessage = ref("");
 const bloading = ref(false);
+const mode = ref();
+const usellm = ref(false);
 
 const sendMessage = async () => {
   if (usermessage.value === "") {
@@ -24,6 +27,9 @@ const sendMessage = async () => {
   } else if (bloading.value) {
     message("系统正在处理消息，请等待输出结束...", { type: "warning" });
     return;
+  } else if (mode.value === undefined) {
+    message("请选择匹配模式！", { type: "error" });
+    return;
   }
 
   bloading.value = true;
@@ -31,17 +37,70 @@ const sendMessage = async () => {
   let temp = usermessage.value;
   usermessage.value = "";
 
-  let res = await getRes({ question: temp });
+  let res = await getRes({
+    question: temp,
+    mode: mode.value,
+    usellm: usellm.value
+  });
 
   if (res.success) {
-    messages.value.push({ sender: "other", content: res.data["response"] });
+    messages.value.push({
+      sender: "other",
+      content: res.data["response"]
+    });
     bloading.value = false;
   }
+};
+
+const clearMessages = () => {
+  //将messages数组清空至只剩下第一条消息
+  messages.value.splice(1);
+  usermessage.value = "";
+  message("聊天记录已清空！", { type: "success" });
 };
 </script>
 
 <template>
   <div id="main" class="flex flex-col h-full">
+    <el-affix :offset="100">
+      <div class="grid grid-cols-12 gap-4 items-center">
+        <el-popconfirm
+          title="你确定要清空聊天记录吗？"
+          @confirm="clearMessages"
+        >
+          <template #reference>
+            <el-button type="danger" :icon="Delete">清空记录</el-button>
+          </template>
+        </el-popconfirm>
+        <el-select
+          v-model="mode"
+          placeholder="请选择匹配模式"
+          class="w-auto col-span-2"
+          :disabled="messages.length > 1"
+        >
+          <el-option label="BoW" :value="1" />
+          <el-option label="BM25" :value="2" />
+          <el-option label="VSM-tfidf" :value="3" />
+          <el-option label="VSM-Word2Vec" :value="4" />
+          <el-option label="LSTM" :value="5" />
+        </el-select>
+        <span v-if="mode === 5" class="text-right font-bold text-xl">
+          大模型辅助：
+        </span>
+        <el-switch
+          v-if="mode === 5"
+          v-model="usellm"
+          size="large"
+          inline-prompt
+          style="
+
+--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+          active-text="开启"
+          inactive-text="关闭"
+          :disabled="messages.length > 1"
+        />
+      </div>
+    </el-affix>
     <div id="box" class="mb-auto">
       <ChatBox :userq="messages" />
     </div>

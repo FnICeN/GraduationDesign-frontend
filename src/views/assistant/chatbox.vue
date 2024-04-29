@@ -12,6 +12,7 @@ const child = ref();
 watch(
   () => messages,
   newVal => {
+    console.log("探测到");
     nextTick(() => {
       child.value[newVal.value.length - 1].scrollIntoView(); // 关键代码
     });
