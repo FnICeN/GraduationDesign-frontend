@@ -2,7 +2,6 @@
 import Motion from "./utils/motion";
 import { useRouter } from "vue-router";
 import { message } from "@/utils/message";
-import { loginRules } from "./utils/rule";
 import { useNav } from "@/layout/hooks/useNav";
 import type { FormInstance } from "element-plus";
 import { useLayout } from "@/layout/hooks/useLayout";
@@ -34,7 +33,7 @@ const { title } = useNav();
 
 const ruleForm = reactive({
   username: "userA",
-  password: "admin123"
+  password: "111111"
 });
 
 const onLogin = async (formEl: FormInstance | undefined) => {
@@ -43,7 +42,10 @@ const onLogin = async (formEl: FormInstance | undefined) => {
   await formEl.validate((valid, fields) => {
     if (valid) {
       useUserStoreHook()
-        .loginByUsername({ username: ruleForm.username, password: "admin123" })
+        .loginByUsername({
+          username: ruleForm.username,
+          password: ruleForm.password
+        })
         .then(res => {
           console.log(res);
           if (res.success) {
@@ -104,12 +106,7 @@ onBeforeUnmount(() => {
             <h2 class="outline-none">{{ title }}</h2>
           </Motion>
 
-          <el-form
-            ref="ruleFormRef"
-            :model="ruleForm"
-            :rules="loginRules"
-            size="large"
-          >
+          <el-form ref="ruleFormRef" :model="ruleForm" size="large">
             <Motion :delay="100">
               <el-form-item
                 :rules="[
