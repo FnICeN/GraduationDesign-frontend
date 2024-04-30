@@ -2,8 +2,8 @@
 import ChatBox from "./chatbox.vue";
 import { ref } from "vue";
 import { message } from "@/utils/message";
-import { getRes } from "@/api/getResponse";
-import { Setting, Delete } from "@element-plus/icons-vue";
+import { getRes, changeMode, clear } from "@/api/getResponse";
+import { Delete } from "@element-plus/icons-vue";
 defineOptions({
   // name 作为一种规范最好必须写上并且和路由的name保持一致
   name: "Assistant"
@@ -19,6 +19,7 @@ const usermessage = ref("");
 const bloading = ref(false);
 const mode = ref();
 const usellm = ref(false);
+const fullscreenLoading = ref(false);
 
 const sendMessage = async () => {
   if (usermessage.value === "") {
@@ -52,11 +53,31 @@ const sendMessage = async () => {
   }
 };
 
-const clearMessages = () => {
+const clearMessages = async () => {
   //将messages数组清空至只剩下第一条消息
   messages.value.splice(1);
   usermessage.value = "";
   message("聊天记录已清空！", { type: "success" });
+  let clearRes = await clear();
+  if (clearRes.success) {
+    mode.value = undefined;
+    bloading.value = false;
+    message("缓存已清空！", { type: "success" });
+  } else {
+    message("清空缓存失败！", { type: "error" });
+  }
+};
+
+const changeModeAction = async () => {
+  fullscreenLoading.value = true;
+  let res = await changeMode(mode.value);
+  if (res.success) {
+    fullscreenLoading.value = false;
+    message("匹配模式已切换！", { type: "success" });
+  } else {
+    fullscreenLoading.value = false;
+    message("匹配模式切换失败！", { type: "error" });
+  }
 };
 </script>
 
@@ -74,9 +95,11 @@ const clearMessages = () => {
         </el-popconfirm>
         <el-select
           v-model="mode"
+          v-loading.fullscreen.lock="fullscreenLoading"
           placeholder="请选择匹配模式"
           class="w-auto col-span-2"
           :disabled="messages.length > 1"
+          @change="changeModeAction"
         >
           <el-option label="BoW" :value="1" />
           <el-option label="BM25" :value="2" />
