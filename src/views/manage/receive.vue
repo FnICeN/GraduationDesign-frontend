@@ -79,7 +79,7 @@ const ReceiveAct = async () => {
 <template>
   <div>
     <div class="grid grid-cols-12">
-      <div class="col-start-3 col-span-7 pt-5">
+      <div class="col-start-4 col-span-6 pt-5">
         <el-card>
           <template #header>
             <div class="text-2xl font-bold text-center">
@@ -100,7 +100,7 @@ const ReceiveAct = async () => {
               </div>
             </template>
             <el-table-column fixed prop="orderid" label="订单号" width="100" />
-            <el-table-column prop="productname" label="商品名" width="200" />
+            <el-table-column prop="productname" label="商品名" width="150" />
             <el-table-column prop="price" label="价格" width="100" />
             <el-table-column
               prop="sta"

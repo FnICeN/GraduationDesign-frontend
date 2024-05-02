@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from "vue";
 import { delay } from "@pureadmin/utils";
+import { getQa, getQaLength } from "@/api/qa";
 defineOptions({
   name: "Dataset"
 });
@@ -9,44 +10,14 @@ const loading = ref(false);
 const dataList = ref([]);
 const columns: TableColumnList = [
   {
-    label: "博文id",
-    prop: "id",
-    minWidth: 100
-  },
-  {
-    label: "用户名",
-    prop: "username",
-    minWidth: 150
-  },
-  {
-    label: "日期",
-    prop: "date",
+    label: "问题",
+    prop: "q",
     minWidth: 200
   },
   {
-    label: "正文",
-    prop: "text",
-    minWidth: 700
-  },
-  {
-    label: "主题",
-    prop: "topic",
-    minWidth: 400
-  },
-  {
-    label: "点赞量",
-    prop: "attitude",
-    minWidth: 100
-  },
-  {
-    label: "评论量",
-    prop: "comment",
-    minWidth: 100
-  },
-  {
-    label: "转发量",
-    prop: "repost",
-    minWidth: 100
+    label: "答案",
+    prop: "a",
+    minWidth: 200
   }
 ];
 /** 加载动画配置 */
@@ -67,34 +38,43 @@ const loadingConfig = reactive({
   // background: rgba()
 });
 /** 分页配置 */
-const pagination = reactive({
+const pagination = ref({
   pageSize: 15,
   currentPage: 1,
-  pageSizes: [10, 15, 20],
+  pageSizes: [15],
   total: 0,
   align: "center",
   background: true,
   small: false
 });
-function onCurrentChange(val) {
+const onCurrentChange = async val => {
+  if (typeof val == "object") {
+    return;
+  }
   loadingConfig.text = `正在加载第${val}页...`;
   loading.value = true;
-  delay(600).then(() => {
+  console.log(val);
+  let qas = await getQa(val);
+  dataList.value = qas.data;
+  delay(500).then(() => {
     loading.value = false;
   });
-}
+};
 
-onMounted(() => {
-  delay(600).then(() => {
-    // dataList.value = tableData;
-    pagination.total = dataList.value.length;
-    loading.value = false;
-  });
+onMounted(async () => {
+  let length = await getQaLength();
+  pagination.value.total = length;
+  let qas = await getQa(1);
+  dataList.value = qas.data;
+  loading.value = false;
 });
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-col items-center">
+    <div class="pb-5">
+      <span class="text-2xl font-bold">训练 / 回答数据集</span>
+    </div>
     <pure-table
       border
       row-key="id"
@@ -104,12 +84,7 @@ onMounted(() => {
       :height="800"
       :loading="loading"
       :loading-config="loadingConfig"
-      :data="
-        dataList.slice(
-          (pagination.currentPage - 1) * pagination.pageSize,
-          pagination.currentPage * pagination.pageSize
-        )
-      "
+      :data="dataList"
       :columns="columns"
       :pagination="pagination"
       @current-change="onCurrentChange"
