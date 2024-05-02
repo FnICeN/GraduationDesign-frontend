@@ -21,11 +21,28 @@ export type userOrdersRes = {
     }
   ];
 };
+export type userInfoRes = {
+  success: boolean;
+  data: {
+    userid: number;
+    username: string;
+    orderCount: number;
+    sendOrReceiveCount: number;
+    completeCount: number;
+  };
+};
 export const getAllProducts = () => {
   return http.request<allProductsRes>("get", baseUrlApi("getAllProducts"));
 };
-export const getCurUserOrders = (data?: object) => {
-  return http.request<userOrdersRes>("get", baseUrlApi("getCurUserOrders"), {
-    data
-  });
+export const getCurUserSendOrReceive = () => {
+  return http.request<userOrdersRes>(
+    "get",
+    baseUrlApi("getCurUserSendOrReceive")
+  );
+};
+export const getCurUserAllOrders = () => {
+  return http.request<userOrdersRes>("get", baseUrlApi("getCurUserAllOrders"));
+};
+export const getCurUserInfo = () => {
+  return http.request<userInfoRes>("get", baseUrlApi("getCurUserInfo"));
 };

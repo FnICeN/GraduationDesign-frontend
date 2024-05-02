@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { message } from "@/utils/message";
-import { getCurUserOrders } from "@/api/getInfo";
+import { getCurUserSendOrReceive } from "@/api/getInfo";
 import { changeStatus } from "@/api/orders";
-import router from "@/router";
 
 defineOptions({
   name: "Receive"
@@ -17,7 +16,7 @@ var selectId = 0;
 
 onMounted(async () => {
   loading.value = true;
-  let productsRes = await getCurUserOrders();
+  let productsRes = await getCurUserSendOrReceive();
   if (productsRes.success) {
     tableData.value = productsRes.data;
     loading.value = false;
@@ -28,7 +27,7 @@ onMounted(async () => {
 
 const refresh = async () => {
   loading.value = true;
-  let productsRes = await getCurUserOrders();
+  let productsRes = await getCurUserSendOrReceive();
   if (productsRes.success) {
     tableData.value = productsRes.data;
     loading.value = false;
@@ -64,7 +63,6 @@ const sendAct = async () => {
     return;
   }
   message("发货失败", { type: "error" });
-  console.log("sendAct");
 };
 const ReceiveAct = async () => {
   let res = await changeStatus({ orderid: selectId, status: "已签收" });
@@ -75,7 +73,6 @@ const ReceiveAct = async () => {
     return;
   }
   message("收货失败", { type: "error" });
-  console.log("ReceiveAct");
 };
 </script>
 
@@ -99,7 +96,7 @@ const ReceiveAct = async () => {
           >
             <template #empty>
               <div class="text-center text-gray-400 text-base">
-                您没有需要发货或收货的商品
+                您没有需要发货或签收的商品
               </div>
             </template>
             <el-table-column fixed prop="orderid" label="订单号" width="100" />
@@ -131,7 +128,7 @@ const ReceiveAct = async () => {
                   size="default"
                   @click="ReciveConfirm(scope.row)"
                 >
-                  收货
+                  签收
                 </el-button>
               </template>
             </el-table-column>
@@ -148,7 +145,7 @@ const ReceiveAct = async () => {
         </template>
       </el-dialog>
       <el-dialog v-model="ReceiveConfirmWindow" title="商品收货" width="300">
-        <span>确认商品收货吗？</span>
+        <span>确认签收商品吗？</span>
         <template #footer>
           <el-button @click="ReceiveConfirmWindow = false">取 消</el-button>
           <el-button type="primary" @click="ReceiveAct">确 定</el-button>
