@@ -107,7 +107,7 @@ const changeModeAction = async () => {
           <el-option label="VSM-Word2Vec" :value="4" />
           <el-option label="LSTM" :value="5" />
         </el-select>
-        <span v-if="mode === 5" class="text-right font-bold text-xl">
+        <span v-if="mode === 5" class="text-right font-bold text-xl col-span-2">
           大模型辅助：
         </span>
         <el-switch

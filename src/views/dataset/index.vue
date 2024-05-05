@@ -190,7 +190,7 @@ const addConfirm = async () => {
       <el-button
         type="primary"
         size="large"
-        style=" flex-basis: 100%;font-size: 20px"
+        style="flex-basis: 100%; font-size: 20px"
         @click="
           isEdit = false;
           editClick({ row: {} });
@@ -198,47 +198,47 @@ const addConfirm = async () => {
         >新增问答数据</el-button
       >
     </div>
+    <el-dialog
+      v-model="editWindow"
+      :title="isEdit ? '编辑问答对' : '添加问答对'"
+      width="500"
+    >
+      <el-form :model="formItem">
+        <el-form-item label="问题">
+          <el-input
+            v-model="formItem.q"
+            type="textarea"
+            autocomplete="off"
+            autosize
+          />
+        </el-form-item>
+        <el-form-item label="回答">
+          <el-input
+            v-model="formItem.a"
+            type="textarea"
+            autocomplete="off"
+            autosize
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="editWindow = false">取消</el-button>
+          <el-button
+            type="primary"
+            @click="isEdit ? editConfirm() : addConfirm()"
+          >
+            确定
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
+    <el-dialog v-model="delWindow" title="删除问答对" width="300">
+      <span>确认删除该问答对吗？</span>
+      <template #footer>
+        <el-button @click="delWindow = false">取 消</el-button>
+        <el-button type="danger" @click="delConfirm"> 确 定 </el-button>
+      </template>
+    </el-dialog>
   </div>
-  <el-dialog
-    v-model="editWindow"
-    :title="isEdit ? '编辑问答对' : '添加问答对'"
-    width="500"
-  >
-    <el-form :model="formItem">
-      <el-form-item label="问题">
-        <el-input
-          v-model="formItem.q"
-          type="textarea"
-          autocomplete="off"
-          autosize
-        />
-      </el-form-item>
-      <el-form-item label="回答">
-        <el-input
-          v-model="formItem.a"
-          type="textarea"
-          autocomplete="off"
-          autosize
-        />
-      </el-form-item>
-    </el-form>
-    <template #footer>
-      <div class="dialog-footer">
-        <el-button @click="editWindow = false">取消</el-button>
-        <el-button
-          type="primary"
-          @click="isEdit ? editConfirm() : addConfirm()"
-        >
-          确定
-        </el-button>
-      </div>
-    </template>
-  </el-dialog>
-  <el-dialog v-model="delWindow" title="删除问答对" width="300">
-    <span>确认删除该问答对吗？</span>
-    <template #footer>
-      <el-button @click="delWindow = false">取 消</el-button>
-      <el-button type="danger" @click="delConfirm"> 确 定 </el-button>
-    </template>
-  </el-dialog>
 </template>

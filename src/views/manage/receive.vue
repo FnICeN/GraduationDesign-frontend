@@ -78,8 +78,8 @@ const ReceiveAct = async () => {
 
 <template>
   <div>
-    <div class="grid grid-cols-12">
-      <div class="col-start-4 col-span-6 pt-5">
+    <div class="flex flex-col items-center">
+      <div class="pt-5">
         <el-card>
           <template #header>
             <div class="text-2xl font-bold text-center">
