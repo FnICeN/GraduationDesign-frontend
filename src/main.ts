@@ -62,3 +62,10 @@ getPlatformConfig(app).then(async config => {
   // .use(useEcharts);
   app.mount("#app");
 });
+
+app.config.globalProperties.$history = [
+  {
+    sender: "other",
+    content: "您好，我是您的智能答疑助手，请问有什么我可以帮助您的吗？"
+  }
+];

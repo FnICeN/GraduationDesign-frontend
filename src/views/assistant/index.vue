@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ChatBox from "./chatbox.vue";
-import { ref } from "vue";
+import { ref, getCurrentInstance, onMounted, onUnmounted } from "vue";
 import { message } from "@/utils/message";
 import { getRes, changeMode, clear } from "@/api/getResponse";
 import { Delete } from "@element-plus/icons-vue";
@@ -8,12 +8,40 @@ defineOptions({
   // name 作为一种规范最好必须写上并且和路由的name保持一致
   name: "Assistant"
 });
-const messages = ref([
-  {
-    sender: "other",
-    content: "您好，我是您的智能答疑助手，请问有什么我可以帮助您的吗？"
+const messages = ref([]);
+
+onMounted(() => {
+  //读取历史记录
+  console.log("mounted");
+  let t = getCurrentInstance().appContext.config.globalProperties.$history;
+  if (t) {
+    // 循环添加
+    for (let i = 0; i < t.length; i++) messages.value.push(t[i]);
+    if (t.length > 1) {
+      mode.value = 5;
+      usellm.value = true;
+    }
+    console.log(messages.value);
   }
-]);
+});
+
+onUnmounted(() => {
+  // 离开时只要在LSTM、开启大模型且有对话内容就保存历史记录
+  console.log("unmounted");
+  if (messages.value.length > 1 && mode.value === 5 && usellm.value === true) {
+    getCurrentInstance().appContext.config.globalProperties.$history =
+      messages.value;
+    return;
+  } else {
+    // 无对话内容，重置历史记录
+    getCurrentInstance().appContext.config.globalProperties.$history = [
+      {
+        sender: "other",
+        content: "您好，我是您的智能答疑助手，请问有什么我可以帮助您的吗？"
+      }
+    ];
+  }
+});
 
 const usermessage = ref("");
 const bloading = ref(false);
@@ -54,6 +82,7 @@ const sendMessage = async () => {
 };
 
 const clearMessages = async () => {
+  console.log("clear");
   //将messages数组清空至只剩下第一条消息
   messages.value.splice(1);
   usermessage.value = "";
