@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import Motion from "./utils/motion";
+import { md5 } from "js-md5";
 import { useRouter } from "vue-router";
 import { message } from "@/utils/message";
 import { useNav } from "@/layout/hooks/useNav";
+import { register } from "@/api/user";
 import type { FormInstance } from "element-plus";
 import { useLayout } from "@/layout/hooks/useLayout";
 import { useUserStoreHook } from "@/store/modules/user";
@@ -23,6 +25,7 @@ defineOptions({
 const router = useRouter();
 const loading = ref(false);
 const ruleFormRef = ref<FormInstance>();
+const registerWindow = ref(false);
 
 const { initStorage } = useLayout();
 initStorage();
@@ -44,7 +47,7 @@ const onLogin = async (formEl: FormInstance | undefined) => {
       useUserStoreHook()
         .loginByUsername({
           username: ruleForm.username,
-          password: ruleForm.password
+          password: md5(ruleForm.password)
         })
         .then(res => {
           console.log(res);
@@ -56,6 +59,7 @@ const onLogin = async (formEl: FormInstance | undefined) => {
             });
           } else {
             message("登录失败", { type: "error" });
+            registerWindow.value = true;
             loading.value = false;
           }
         });
@@ -64,6 +68,22 @@ const onLogin = async (formEl: FormInstance | undefined) => {
       return fields;
     }
   });
+};
+
+const registerAct = async () => {
+  loading.value = true;
+  let res = await register({
+    username: ruleForm.username,
+    password: md5(ruleForm.password)
+  });
+  if (res) {
+    message("注册成功，请登录", { type: "success" });
+    registerWindow.value = false;
+    loading.value = false;
+    return;
+  }
+  message("注册失败", { type: "error" });
+  loading.value = false;
 };
 
 /** 使用公共函数，避免`removeEventListener`失效 */
@@ -154,6 +174,17 @@ onBeforeUnmount(() => {
         </div>
       </div>
     </div>
+    <el-dialog v-model="registerWindow" title="账户注册" width="300">
+      <span>该账户还未注册，是否直接注册？</span>
+      <br />
+      <span>账户昵称：{{ ruleForm.username }}</span>
+      <br />
+      <span>账户密码：{{ ruleForm.password }}</span>
+      <template #footer>
+        <el-button @click="registerWindow = false">取 消</el-button>
+        <el-button type="primary" @click="registerAct">确 定</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
