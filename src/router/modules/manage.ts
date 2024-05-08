@@ -9,6 +9,15 @@ export default {
   },
   children: [
     {
+      path: "/manage/edit",
+      name: "Edit",
+      component: () => import("@/views/manage/edit.vue"),
+      meta: {
+        title: "编辑商品",
+        roles: ["admin"]
+      }
+    },
+    {
       path: "/manage/buy",
       name: "Buy",
       component: () => import("@/views/manage/buy.vue"),
