@@ -30,6 +30,18 @@ const refresh = async () => {
   }
 };
 
+const nullCheck = () => {
+  if (!formItem.value.productname) {
+    message("商品名不能为空", { type: "warning" });
+    return false;
+  }
+  if (!formItem.value.price) {
+    message("价格不能为空", { type: "warning" });
+    return false;
+  }
+  return true;
+};
+
 onMounted(async () => {
   loading.value = true;
   let productsRes = await getAllProducts();
@@ -60,6 +72,7 @@ const editClick = row => {
 
 const editConfirm = async () => {
   console.log(formItem.value);
+  if (!nullCheck()) return;
   let res = await updateProduct({
     productid: selectedItem.value.productid,
     productname: formItem.value.productname,
@@ -76,6 +89,7 @@ const editConfirm = async () => {
 
 const addConfirm = async () => {
   console.log("addConfirm", formItem.value);
+  if (!nullCheck()) return;
   let res = await addProduct({
     productname: formItem.value.productname,
     price: formItem.value.price

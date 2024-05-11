@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, getCurrentInstance } from "vue";
 import { delay } from "@pureadmin/utils";
 import { message } from "@/utils/message";
 import { getQa, getQaLength, addQa, delQa, updateQa } from "@/api/qa";
@@ -13,10 +13,12 @@ const isEdit = ref(false);
 const editWindow = ref(false);
 const delWindow = ref(false);
 const selectedItem = ref(null);
+const username = ref("未登录");
 const formItem = ref({
   q: "",
   a: ""
 });
+const app = getCurrentInstance();
 const columns: TableColumnList = [
   {
     label: "ID",
@@ -82,6 +84,7 @@ const onCurrentChange = async val => {
 };
 
 onMounted(async () => {
+  username.value = app.appContext.config.globalProperties.$username;
   let length = await getQaLength();
   pagination.value.total = length;
   let qas = await getQa(1);
@@ -204,6 +207,9 @@ const addConfirm = async () => {
       width="500"
     >
       <el-form :model="formItem">
+        <el-form-item v-if="!isEdit" label="操作用户">
+          <el-input v-model="username" disabled />
+        </el-form-item>
         <el-form-item label="问题">
           <el-input
             v-model="formItem.q"

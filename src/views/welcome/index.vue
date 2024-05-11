@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, getCurrentInstance } from "vue";
 import { getCurUserInfo } from "@/api/getInfo";
 import { useTransition } from "@vueuse/core";
 defineOptions({
@@ -11,6 +11,7 @@ const username = ref("未登录");
 const orderCount_source = ref(0);
 const sendOrReceiveCount_source = ref(0);
 const completeCount_source = ref(0);
+const app = getCurrentInstance();
 
 const output_orderCount = useTransition(orderCount_source, {
   duration: 1000,
@@ -33,6 +34,8 @@ onMounted(async () => {
   sendOrReceiveCount_source.value = res.data.sendOrReceiveCount;
   completeCount_source.value = res.data.completeCount;
   console.log(res);
+  //保存用户名到全局
+  app.appContext.config.globalProperties.$username = res.data.username;
 });
 </script>
 

@@ -69,3 +69,5 @@ app.config.globalProperties.$history = [
     content: "您好，我是您的智能答疑助手，请问有什么我可以帮助您的吗？"
   }
 ];
+
+app.config.globalProperties.$username = "未登录";
