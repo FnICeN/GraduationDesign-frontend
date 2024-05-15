@@ -3,7 +3,9 @@ import ChatBox from "./chatbox.vue";
 import { ref, getCurrentInstance, onMounted, onUnmounted } from "vue";
 import { message } from "@/utils/message";
 import { getRes, changeMode, clear } from "@/api/getResponse";
+import { addQaToHistory } from "@/api/qa";
 import { Delete } from "@element-plus/icons-vue";
+import { timestamp } from "@vueuse/core";
 defineOptions({
   // name 作为一种规范最好必须写上并且和路由的name保持一致
   name: "Assistant"
@@ -40,6 +42,7 @@ onUnmounted(() => {
         content: "您好，我是您的智能答疑助手，请问有什么我可以帮助您的吗？"
       }
     ];
+    clearMessages();
   }
 });
 
@@ -78,6 +81,14 @@ const sendMessage = async () => {
       content: res.data["response"]
     });
     bloading.value = false;
+
+    addQaToHistory({
+      // 取10位时间戳
+      timestamp: Math.floor(timestamp() / 1000).toString(),
+      q: temp,
+      a: res.data["response"],
+      llm: usellm.value ? 1 : 0
+    });
   }
 };
 

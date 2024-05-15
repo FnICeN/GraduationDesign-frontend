@@ -31,6 +31,20 @@ export type userInfoRes = {
     completeCount: number;
   };
 };
+export type userHistoryRes = {
+  success: boolean;
+  data: [
+    {
+      id: number;
+      userid: number;
+      timestamp: string;
+      q: string;
+      actions: string;
+      llm: number;
+    }
+  ];
+};
+
 export const getAllProducts = () => {
   return http.request<allProductsRes>("get", baseUrlApi("getAllProducts"));
 };
@@ -45,4 +59,7 @@ export const getCurUserAllOrders = () => {
 };
 export const getCurUserInfo = () => {
   return http.request<userInfoRes>("get", baseUrlApi("getCurUserInfo"));
+};
+export const getCurUserHistory = () => {
+  return http.request<userHistoryRes>("get", baseUrlApi("getCurUserHistory"));
 };

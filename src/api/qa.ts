@@ -29,3 +29,11 @@ export const delQa = (data?: object) => {
 export const updateQa = (data?: object) => {
   return http.request<qaChangeRes>("post", baseUrlApi("updateQa"), { data });
 };
+export const addQaToHistory = (data?: object) => {
+  return http.request<qaChangeRes>("post", baseUrlApi("addHistory"), { data });
+};
+export const delQaFromHistory = (data?: object) => {
+  return http.request<qaChangeRes>("post", baseUrlApi("deleteHistory"), {
+    data
+  });
+};
