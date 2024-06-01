@@ -44,7 +44,11 @@ onMounted(async () => {
     <h1 v-if="userid === 0">您还未登录，请先登录</h1>
     <el-card v-if="userid !== 0" class="w-3/5">
       <template #header>
-        <h1 class="text-center">欢迎访问在线电商平台，尊敬的{{ username }}</h1>
+        <h1 class="text-center">
+          欢迎访问在线电商平台，尊敬的{{
+            username === "userA" ? "管理员" : "用户"
+          }}{{ username }}
+        </h1>
       </template>
       <div>
         <el-row :gutter="16">
